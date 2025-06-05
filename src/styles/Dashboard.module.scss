@@ -14,7 +14,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 2rem 0;
+    padding: 2rem 0 4rem 0;
     gap: 1rem;
     max-width: 25rem;
     width: 80%;
@@ -29,17 +29,28 @@
         border-radius: 0.5rem;
     }
 
+    .newFormBtn {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
     button:disabled {
         cursor: not-allowed;    
     }
 }
 
 .allForms {
-    width: 100%;
-    padding: 3rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 95%;
+    padding: 3rem 1.5rem 5rem 1.5rem;
     background-color: rgb(255, 255, 255, 0.03);
     border-top-left-radius: 2rem;
     border-top-right-radius: 2rem;
+    margin-top: auto;
 
     h1 {
         font-size: 1.7rem;
@@ -48,6 +59,7 @@
     .forms {
         display: flex;
         flex-flow: row wrap;
+        justify-content: center;
         gap: 1rem;
         padding-top: 2rem;
 

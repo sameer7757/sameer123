@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import styles from '../styles/Dashboard.module.scss'
 
+import { SpinnerDotted } from 'spinners-react'
+
 const Dashboard = () => {
 
     const [error, setError] = useState()
@@ -10,6 +12,7 @@ const Dashboard = () => {
     const { currentUser, logout } = useAuth()
 
     const [forms, setForms] = useState()
+    const [creatingForm, setCreatingForm] = useState(false)
 
     const [newForm, setNewForm] = useState({
         formName: '',
@@ -38,7 +41,8 @@ const Dashboard = () => {
     }
 
     function handleNewForm() {
-        fetch('http://localhost:5000/addForm', {
+        setCreatingForm(true)
+        fetch('https://feedsys-server.netlify.app/.netlify/functions/api/addForm', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -50,18 +54,18 @@ const Dashboard = () => {
         }).then((res) => {
             return res.json()
         }).then((data) => {
-            console.log(data)
+            setCreatingForm(false)
             navigate(`/dashboard/form/addQues/${data.formId}`)
         }).catch((err) => {
+            setCreatingForm(false)
             console.log(err)
         })
     }
 
     useEffect(() => {
-        fetch('http://localhost:5000/allForms').then((res) => {
+        fetch('https://feedsys-server.netlify.app/.netlify/functions/api/allForms').then((res) => {
             return res.json()
         }).then((data) => {
-            console.log(data.data)
             setForms(data.data)
         }).catch((err) => {
             console.log(err)
@@ -79,22 +83,36 @@ const Dashboard = () => {
             <section className={styles.newFormSection}>
                 <input type="text" placeholder='Form Name' className='newFormName' id='newFormName' value={newForm.formName} name='formName' onChange={(e) => handleNewFormDetails(e)} />
                 <input type="text" placeholder='Form Description' id='newFormDesc' className='newFormDesc' value={newForm.formDesc} name='formDesc' onChange={(e) => handleNewFormDetails(e)} />
-                <button onClick={handleNewForm} disabled={(newForm.formName !== '' && newForm.formDesc !== '') ? false : true}>Create a new form</button>
+                <button className={styles.newFormBtn} onClick={handleNewForm} disabled={(newForm.formName !== '' && newForm.formDesc !== '') && (!creatingForm) ? false : true}>
+                    Create a new form
+                    {
+                        creatingForm ? <SpinnerDotted size={18} thickness={150} speed={100} color="rgb(0, 0, 0)" /> : ''
+                    }
+                </button>
             </section>
 
             <section className={styles.allForms}>
                 <h1 className={styles.allFormsHeading}>All Forms</h1>
                 <div className={styles.forms}>
-                    {forms ? forms.map((form, index) => {
-                        return (
-                            <div className={styles.formCard} onClick={() => navigate(`/dashboard/form/${form._id}`)} key={index}>
-                                <p className={styles.formTitle}>{form.title}</p>
-                                <p className={styles.formDesc}>{form.desc}</p>
-                            </div>
+                    {
+                        forms ? (
+                            <>
+                                {forms.length >= 1 ? forms.map((form, index) => {
+                                    return (
+                                        <div className={styles.formCard} onClick={() => navigate(`/dashboard/form/${form._id}`)} key={index}>
+                                            <p className={styles.formTitle}>{form.title}</p>
+                                            <p className={styles.formDesc}>{form.desc}</p>
+                                        </div>
+                                    )
+                                }) : (
+                                    <p>No forms created</p>
+                                )}
+                            </>
+                        ) : (
+                            // <p>Loading</p>
+                            <SpinnerDotted size={37} thickness={150} speed={100} color="rgb(238, 244, 237)" />
                         )
-                    }) : (
-                        <p>No forms created</p>
-                    )}
+                    }
                 </div>
             </section>
             
